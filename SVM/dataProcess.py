@@ -1,12 +1,17 @@
 import numpy as np
 
 #take a txt file name, return only continuous variable as part of feature vector
-def processData(fileName, featureVector, continousFeatureIndexs):
+def processData(fileName, featureVector, labels, continousFeatureIndexs):
 	with open(fileName) as file:
 		data = file.readlines()
 		for line in data:
 			features = line.split(',')
 			featureVector.append([float(features[x]) for x in range(0,len(features)) if x in continousFeatureIndexs])
+			label = features[len(features)-1].lstrip()
+			if(label[0] == '<'):
+				labels.append(-1)
+			else:
+				labels.append(1)
 
 #return normalized data
 def dataNormalization(featureVector):
