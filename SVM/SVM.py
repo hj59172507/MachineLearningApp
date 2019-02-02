@@ -39,7 +39,7 @@ trainFV = dataProcess.dataNormalization(trainFV)
 testFV = dataProcess.dataNormalization(testFV)
 
 #define constants for training SVM, this SVM use sign(ax + b) to make prediction
-lambdas = [0.00000001, 0.000001, 0.0001, 0.0007, 1]
+lambdas = [0.00000001, 0.000001, 0.0001, 0.001, 1]
 aVectors = [[1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1]]
 bVector = [1,1,1,1,1]
 batchSize, seasons, stepsPerSeason, accTestNumber, confirmAccSteps = 1, 100, 1000, 400, 30
@@ -52,7 +52,7 @@ dataProcess.splitData(ptest, testModelFV, testModelLabels, trainModelFV, trainMo
 
 #loop to train models build with different lambdas
 for season in range(1, seasons+1):
-	learnRate = 1/(0.1*season+500)
+	learnRate = 1/(0.1*season+200)
 	trainFVDiv, testHeldout, trainLabsDiv, testHeldoutLabels = [],[], [], []
 	dataProcess.getRandomN(accTestNumber, testHeldout, testHeldoutLabels, trainFVDiv, trainLabsDiv, trainModelFV, trainModelLabels)
 	for step in range(1, stepsPerSeason+1):
@@ -64,13 +64,14 @@ for season in range(1, seasons+1):
 				tempAccs[lam].append(getTempAcc(aVectors[lam], bVector[lam], testHeldout, testHeldoutLabels))
 				coefVectors[lam].append(np.sum(np.abs(aVectors[lam])))
 
-
+#plot  accuracy 
 for i in range(0, len(tempaccs)):
 	x = np.linspace(0,seasons,len(tempaccs[i]))
 	plt.plot(x, tempaccs[i], label=f'lambda = {lambdas[i]}')
 plt.legend(loc='lower right')
 plt.show()
 
+#plot aVector magnitude 
 for i in range(0, len(coefvectors)):
 	x = np.linspace(0,seasons,len(coefvectors[i]))
 	plt.plot(x, coefvectors[i], label=f'lambda = {lambdas[i]}')
