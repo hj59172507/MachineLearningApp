@@ -4,3 +4,5 @@
 !README.*
 !.gitignore
 !*/
+!*.Rmd
+Week*
