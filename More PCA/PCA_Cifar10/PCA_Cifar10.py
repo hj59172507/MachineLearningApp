@@ -8,7 +8,7 @@ import cv2
 import csv
 
 #constants
-nComp, categoryCount = 20, 10
+nComp, categoryCount, mdsComp = 20, 10, 2
 eucFile, pcaDicFile = 'partb_distances.csv','partc_distances.csv'
 files = ['data_batch_1','data_batch_2','data_batch_3','data_batch_4','data_batch_5','test_batch']
 category = ['class1','class2','class3','class4','class5','class6','class7','class8','class9','class10']
@@ -85,7 +85,7 @@ def plotMeanImage(meanList):
 dataList = readAll(files)
 meanList = getMeanForAll(dataList)
 #Compute mean iamge and sum square difference
-plotMeanImage(meanList)
+#plotMeanImage(meanList)
 #diffList = getAvgSqDiff(dataList, meanList)
 #plotBar(diffList)
 
@@ -106,9 +106,32 @@ def writeAsCSVTo(file, data):
 		for row in data:
 			fwriter.writerow(row)
 
+#multi-dimensional scaling using distance matrix
+def MDS(disMat):
+	N = len(disMat)
+	A = np.identity(N)
+	W = -0.5 * np.dot(A, np.dot(disMat, A.T))
+	lam, U = np.linalg.eig(W)
+	lam = np.diag(np.sqrt(abs(lam)))[:mdsComp,:mdsComp]
+	U = U[:,:mdsComp]
+	Y = np.dot(U,lam)
+	x, y = [],[]
+	for point in Y:
+		x.append(point[0])
+		y.append(point[1])
+	return (x,y)
+
+#plot a scatter plot with given title
+def scatterPlot(x, y, title):
+	plt.scatter(x, y)
+	plt.xlabel("First component")
+	plt.ylabel("Second component")
+	plt.title(title)
+
 #Compute distance martrix, perform multi-dimensional scaling and plot the first two component
 eucDisMat = getDisMatrixEuclidean(meanList)
-
+x,y = MDS(eucDisMat)
+scatterPlot(x, y, "Scatter plot using Euclidean distance")
 
 #Compute distance martrix define by E(A->B) = (E(A|B)+E(B|A))/2, perform multi-dimensional scaling and plot the first two component
 
