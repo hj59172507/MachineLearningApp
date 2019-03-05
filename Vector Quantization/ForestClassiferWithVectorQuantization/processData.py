@@ -19,12 +19,12 @@ def getAllSegments(segmentLength, dataFiles):
 	segments = []
 	for i in range(len(dataFiles)):
 		for file in dataFiles[i]:
-			segments.append(getSegment(file, segmentLength))
+			segments.extend(getSegment(file, segmentLength))
 	return segments
 
-#given a file name, return list of segments
+#given a file name, return list of fixed length segment
 def getSegment(file, segmentLength):
-	segment = []
+	segments, segment = [], []
 	with open(file) as f:
 		lines = f.readlines();
 		size = segmentLength;
@@ -35,8 +35,4 @@ def getSegment(file, segmentLength):
 				size = segmentLength
 			segment.extend([int(x) for x in line.split()])
 			size -= 1
-	return segment
-
-#dummy varible to check result
-dataFiles = getDataFiles(paths)
-segments = getAllSegment(32,dataFiles)
+	return segments
