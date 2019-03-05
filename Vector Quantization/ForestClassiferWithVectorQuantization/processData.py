@@ -35,5 +35,6 @@ def getAllSegment(segmentLength, dataFiles):
 					size -= 1
 	return segments
 
+#dummy varible to check result
 dataFiles = getDataFiles(paths)
 segments = getAllSegment(32,dataFiles)
