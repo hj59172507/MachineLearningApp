@@ -47,4 +47,31 @@ def getSegmentsFromDisk(sourceFile, dataFiles, segmentLength):
 		np.save(sourceFile, segmentsFromAllFiles)
 		return segmentsFromAllFiles
 
-#given a paths to all classes, divide files in each class into 3 category
+#given a paths to all classes, divide files in each class into n category
+def splitDataFile(dataFiles, n):
+	splitedDataFiles = [ [ [] for j in range(n) ] for i in range(len(dataFiles))]
+	temp = 0
+	for i in range(len(dataFiles)):
+		for file in dataFiles[i]:
+			if(temp == n):
+				temp = 0
+			splitedDataFiles[i][temp].append(file)
+			temp += 1
+	return splitedDataFiles
+
+#given a splited data files, return a training set and testing set, where testing set is at index i as specified and training set is everything else
+def getTrainAndTestSet(splitedDataFiles, testSetIndex):
+	testSet, trainSet = [], []
+	for i in range(len(splitedDataFiles)):
+		testSet.append([])
+		trainSet.append([])
+		for j in range(len(splitedDataFiles[i])):
+			if j == testSetIndex:
+				testSet[i].append(splitedDataFiles[i][j])
+			else:
+				trainSet[i].extend(splitedDataFiles[i][j])
+	return testSet, trainSet
+
+
+
+
