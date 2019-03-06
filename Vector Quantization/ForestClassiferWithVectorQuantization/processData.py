@@ -67,7 +67,7 @@ def getTrainAndTestSet(splitedDataFiles, testSetIndex):
 		trainSet.append([])
 		for j in range(len(splitedDataFiles[i])):
 			if j == testSetIndex:
-				testSet[i].append(splitedDataFiles[i][j])
+				testSet[i].extend(splitedDataFiles[i][j])
 			else:
 				trainSet[i].extend(splitedDataFiles[i][j])
 	return testSet, trainSet
