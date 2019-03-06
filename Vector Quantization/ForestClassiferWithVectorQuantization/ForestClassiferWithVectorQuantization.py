@@ -8,7 +8,7 @@ from sklearn.ensemble import RandomForestClassifier
 #relative path to each class folder
 paths = ['Brush_teeth','Climb_stairs','Comb_hair','Descend_stairs','Drink_glass','Eat_meat','Eat_soup','Getup_bed','Liedown_bed','Pour_water','Sitdown_chair','Standup_chair','Use_telephone','Walk']
 #define fix size
-segmentLength, clusterCount, splitCount, treeNum, maxDepths = 32, 48, 3, 30, 16
+segmentLength, clusterCount, splitCount, treeNum, maxDepths = 10, 36, 3, 30, 16
 allSegmentsFile, clusterModelLib = 'allSegments.npy', 'cluster.joblib'
 
 #load and return cluster model if already computed before, else compute, save and return the model

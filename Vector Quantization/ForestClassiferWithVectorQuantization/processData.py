@@ -43,7 +43,7 @@ def getSegmentsFromDisk(sourceFile, dataFiles, segmentLength):
 	if os.path.isfile(sourceFile):
 		return np.load(sourceFile)
 	else:
-		segmentsFromAllFiles = np.array(pData.getAllSegments(segmentLength, dataFiles))
+		segmentsFromAllFiles = np.array(getAllSegments(segmentLength, dataFiles))
 		np.save(sourceFile, segmentsFromAllFiles)
 		return segmentsFromAllFiles
 
