@@ -39,12 +39,12 @@ def getSegment(file, segmentLength):
 	return segments
 
 #if given source file exist, load and return it. Else compute from class path provided, save to disk and return it
-def getSegmentsFromDisk(sourceFile, paths, segmentLength):
+def getSegmentsFromDisk(sourceFile, dataFiles, segmentLength):
 	if os.path.isfile(sourceFile):
 		return np.load(sourceFile)
 	else:
-		dataFiles = pData.getDataFiles(paths)
 		segmentsFromAllFiles = np.array(pData.getAllSegments(segmentLength, dataFiles))
 		np.save(sourceFile, segmentsFromAllFiles)
 		return segmentsFromAllFiles
 
+#given a paths to all classes, divide files in each class into 3 category

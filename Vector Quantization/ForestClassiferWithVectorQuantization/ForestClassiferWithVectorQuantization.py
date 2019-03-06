@@ -5,11 +5,11 @@ from sklearn.cluster import AgglomerativeClustering
 from joblib import dump, load
 
 #load and return cluster model if already computed before, else compute, save and return the model
-def getClusterModel(clusterModelLib, allSegmentsFile, paths, segmentLength, clusterCount):
+def getClusterModel(clusterModelLib, allSegmentsFile, dataFiles, segmentLength, clusterCount):
 	if os.path.isfile(clusterModelLib):
 		return load(clusterModelLib)
 	else:
-		segmentsFromAllFiles = pData.getSegmentsFromDisk(allSegmentsFile, paths, segmentLength)
+		segmentsFromAllFiles = pData.getSegmentsFromDisk(allSegmentsFile, dataFiles, segmentLength)
 		aggCluster = AgglomerativeClustering(n_clusters = clusterCount).fit(segmentsFromAllFiles)
 		dump(aggCluster, clusterModelLib)
 		return aggCluster
@@ -21,5 +21,6 @@ segmentLength = 32
 clusterCount = 480
 allSegmentsFile, clusterModelLib = 'allSegments.npy', 'cluster.joblib'
 
-aggCluster = getClusterModel(clusterModelLib, allSegmentsFile, paths, segmentLength, clusterCount)
+dataFiles = pData.getDataFiles(paths)
+aggCluster = getClusterModel(clusterModelLib, allSegmentsFile, dataFiles, segmentLength, clusterCount)
 print(aggCluster.labels_)
