@@ -1,4 +1,5 @@
 import os
+import numpy as np
 
 #use paths provided to find all file names for each class
 def getDataFiles(paths):
@@ -36,3 +37,14 @@ def getSegment(file, segmentLength):
 			segment.extend([int(x) for x in line.split()])
 			size -= 1
 	return segments
+
+#if given source file exist, load and return it. Else compute from class path provided, save to disk and return it
+def getSegmentsFromDisk(sourceFile, paths, segmentLength):
+	if os.path.isfile(sourceFile):
+		return np.load(sourceFile)
+	else:
+		dataFiles = pData.getDataFiles(paths)
+		segmentsFromAllFiles = np.array(pData.getAllSegments(segmentLength, dataFiles))
+		np.save(sourceFile, segmentsFromAllFiles)
+		return segmentsFromAllFiles
+
