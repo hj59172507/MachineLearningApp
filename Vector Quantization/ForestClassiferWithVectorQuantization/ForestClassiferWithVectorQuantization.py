@@ -4,12 +4,14 @@ import os
 from sklearn.cluster import KMeans
 from joblib import dump, load
 from sklearn.ensemble import RandomForestClassifier
+import matplotlib.pyplot as plt
 
 #relative path to each class folder
 paths = ['Brush_teeth','Climb_stairs','Comb_hair','Descend_stairs','Drink_glass','Eat_meat','Eat_soup','Getup_bed','Liedown_bed','Pour_water','Sitdown_chair','Standup_chair','Use_telephone','Walk']
 #define fix size
 segmentLength, clusterCount, splitCount, treeNum, maxDepths = 10, 36, 3, 30, 16
-allSegmentsFile, clusterModelLib = 'allSegments.npy', 'cluster.joblib'
+allSegmentsFile, clusterModelLib, rfModelLib = 'allSegments.npy', 'cluster.joblib', 'rfModel.joblib'
+rfModelSaved = False
 
 #load and return cluster model if already computed before, else compute, save and return the model
 def getClusterModel(dataFiles):
@@ -44,7 +46,22 @@ def getLabelsUsingRandomForest(testSet, trainSet, kmeans):
 
 	clf = RandomForestClassifier(n_estimators = treeNum, max_depth = maxDepths)
 	clf.fit(trainFV, trainLabels)
+
+	dump(clf, rfModelLib)
+
 	return clf.predict(testFV), testLabels
+
+#given randomForest model and testing set, compute confusion table
+def getConfusionMatrix(testSet):
+	rfModel = load(rfModelLib)
+	for i in range(len(testSet)):
+		predictedLables = rfModel.predict(getFeatureVectors(kmeans, testSet[i]))
+		predictedCount = [0 for j in range(len(testSet))]
+		for lables in predictedLables:
+			predictedCount[lables] += 1
+		print(predictedCount)
+		print(f'Error rate is: {1-predictedCount[i]/sum(predictedCount)}')
+		print()
 
 #given predicted and true labels, return accuracy
 def getAccuracy(pLabels, tLables):
@@ -54,9 +71,24 @@ def getAccuracy(pLabels, tLables):
 			correct += 1
 	return correct / len(pLabels)
 
+#plot a average histogram for all class
+def plotHistForAllClasses(dataFiles, kmeans):
+	x = np.arange(clusterCount)
+	for i in range(len(dataFiles)):
+		fvs = getFeatureVectors(kmeans, dataFiles[i]);
+		meanFV = np.mean(np.array(fvs), 0)
+		plt.bar(x, meanFV)
+		plt.title(paths[i])
+		plt.ylabel("count")
+		plt.xlabel("k Clusters")
+		plt.show()
+
 #load cluster model
 dataFiles = pData.getDataFiles(paths)
 kmeans = getClusterModel(dataFiles)
+
+#plot histogram for each classes
+#plotHistForAllClasses(dataFiles, kmeans)
 
 #train and test
 splitedDataFiles = pData.splitDataFile(dataFiles, splitCount)
