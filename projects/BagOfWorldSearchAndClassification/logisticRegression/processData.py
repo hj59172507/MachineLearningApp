@@ -1,12 +1,11 @@
 import csv
 
 def getDataWithoutStopingWord(file):
-	with open(file) as f:
+	with open(file, encoding='utf-8') as f:
 		reader = csv.reader(f, delimiter=',')
 		line,documents, stars = 0, [], []
 		for row in reader:
 			if line == 0:
-				print(row)
 				line+=1
 			else:
 				documents.append(row[5].lower())
