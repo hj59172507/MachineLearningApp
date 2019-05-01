@@ -1,0 +1,49 @@
+---
+title: "linearReggisonOnHousePrice"
+author: "Huajian Lin"
+date: "March 11, 2019"
+output: html_document
+---
+
+```{r}
+#fitting simple linear regression
+file = "houseData.txt"
+houseData = read.table(file, sep = "", header = T)
+modelWithOutlier = lm(MEDV ~ ., data = houseData)
+#plot it
+plot(modelWithOutlier)
+```
+```{r}
+#remove outliers
+#find all outliers indexes
+largeRStandardIndex = which(T == ( (rstandard(modelWithOutlier) > 4) | (rstandard(modelWithOutlier) < -4) ))
+largeCookDistanceIndex = which(T == (cooks.distance(modelWithOutlier) > (4*mean(cooks.distance(modelWithOutlier))) ) )
+largeLeverageIndex = which(T == (hatvalues(modelWithOutlier) > 0.1))
+#union all outliers 
+outliers = union(union(largeRStandardIndex, largeCookDistanceIndex), largeLeverageIndex)
+
+#build new model with outliers removed
+houseData_outliersRemoved = houseData[-outliers, ]
+modelWithOutOutlier = lm(MEDV ~., data = houseData_outliersRemoved)
+plot(modelWithOutOutlier)
+summary(modelWithOutOutlier)
+
+```
+
+```{r}
+#remove outliers
+#find all outliers indexes
+largeRStandardIndex = which(T == ( (rstandard(modelWithOutlier) > 3) | (rstandard(modelWithOutlier) < -3) ))
+largeCookDistanceIndex = which(T == (cooks.distance(modelWithOutlier) > (3*mean(cooks.distance(modelWithOutlier))) ) )
+largeLeverageIndex = which(T == (hatvalues(modelWithOutlier) > 0.1))
+#union all outliers 
+outliers = union(union(largeRStandardIndex, largeCookDistanceIndex), largeLeverageIndex)
+
+#build new model with outliers removed
+houseData_outliersRemoved = houseData[-outliers, ]
+modelWithOutOutlier = lm(MEDV ~., data = houseData_outliersRemoved)
+plot(modelWithOutOutlier)
+summary(modelWithOutOutlier)
+length(largeCookDistanceIndex)
+```
+

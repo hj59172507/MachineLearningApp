@@ -1,0 +1,90 @@
+---
+title: "PCA"
+author: "Huajian Lin"
+date: "February 9, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+#Part 1: 
+
+#find MSE for 0N
+getError = function (oriData, reconsDataSet){
+  total = 0
+  for(i in 1:nrow(oriData)){
+    total = total + sum((oriData[i,] - reconsDataSet[i,])^2)
+  }
+  return(total / nrow(oriData))
+}
+
+#get eigen vector 
+getEigenVector = function(dataSet){
+  dataSetCov = cov(dataSet, dataSet)
+  return(eigen(dataSetCov)$vectors)
+}
+
+#reconstruct a dataset using mean and eigenVector from srcDataSet using nComp
+reconstructWithPCA = function(srcDataSet, reconsDataSet, nComp){
+  tempData = reconsDataSet
+  means = colMeans(srcDataSet)
+  eigenVectors = getEigenVector(srcDataSet)
+  for(i in 1:nrow(tempData)){
+    temp = means
+    if(nComp >= 1){
+      for(j in 1:nComp){
+        temp = temp + t(eigenVectors[,j]) %*% t(tempData[i,]-means) %*% eigenVectors[,j]
+      }
+    }
+    tempData[i,] = rbind(temp)
+  }
+  return(tempData)
+}
+
+#find N0 to N4 for all dataSet I to V
+oriIris = read.csv('iris.csv')
+dataSets = c('dataI.csv','dataII.csv','dataIII.csv','dataIV.csv','dataV.csv')
+
+#create output dataFrame
+outPutColNames = c('0N','1N','2N','3N','4N','0C','1C','2C','3C','4C')
+df = setNames(data.frame(matrix(ncol = 10, nrow = 5)), outPutColNames)
+
+#for each dataSet, find the MSE using noiseless and noisy data using 0 to 4 components
+for(i in 1:5){
+  data = read.csv(dataSets[i])
+  for(j in 0:4){
+    #using noiseless data 
+    df[i,j+1] = getError(oriIris, reconstructWithPCA(oriIris, data, j))
+  }
+  for(j in 0:4){
+    #using noisy data 
+    df[i,j+6] = getError(oriIris, reconstructWithPCA(data, data, j))
+  }
+}
+
+write.csv(df, "huajian2-test.csv")
+```
+
+```{r}
+#Part 2:
+d1 = read.csv('dataI.csv')
+
+#function that return a reconstructed data set using nComp components from PCA with means mu
+reconstructWithPCA = function(nComp, mu, dataSet){
+  Xpca = prcomp(dataSet)
+  xHat = Xpca$x[,1:nComp] %*% t(Xpca$rotation[,1:nComp])
+  return(scale(xHat, center = -mu, scale = F))
+}
+
+#get new dataset using 2 PCA componenet 
+xHat = reconstructWithPCA(2,colMeans(d1), d1)
+xHat
+dwrite.csv(xHat, "huajian2-recon.csv")
+```
+
+
+
